@@ -1,0 +1,18 @@
+version: 1
+api_server:
+  workers: 1
+  traffic:
+    timeout: 120
+  grpc:
+    reflection:
+      enabled: false
+runners:
+  logging:
+    access:
+      enabled: false
+  vit-extractor-pneumonia:
+    resources:
+      cpu: 1
+  vit-model-pneumonia:
+    resources:
+      cpu: 1

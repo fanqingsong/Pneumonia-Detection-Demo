@@ -1,13 +1,22 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import PIL.Image
 import PIL.ImageOps
 import transformers
 
 import bentoml
 
+
+def _load_warmup_image() -> PIL.Image.Image:
+    test_path = Path("./samples/NORMAL2-IM-1427-0001.jpeg")
+    if test_path.is_file():
+        return PIL.Image.open(test_path)
+    return PIL.Image.new("RGB", (224, 224), color=(128, 128, 128))
+
+
 def download_model() -> int:
-    test_path = "./samples/NORMAL2-IM-1427-0001.jpeg"
     extractor = transformers.ViTImageProcessor.from_pretrained(
         "nickmuchi/vit-finetuned-chest-xray-pneumonia"
     )
@@ -16,7 +25,7 @@ def download_model() -> int:
     )
 
     # preprocess image
-    im = PIL.Image.open(test_path)
+    im = _load_warmup_image()
     im = PIL.ImageOps.exif_transpose(im).convert("RGB")
     outputs = model(**extractor(images=im, return_tensors="pt"))
 

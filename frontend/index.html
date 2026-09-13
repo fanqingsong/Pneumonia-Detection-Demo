@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>肺炎 X 光检测演示</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg"></div>
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo" aria-hidden="true">🫁</span>
+        <div>
+          <h1>肺炎检测演示</h1>
+          <p>胸部 X 光影像分类 · BentoML + ViT</p>
+        </div>
+      </div>
+      <span id="api-status" class="status pending">服务检测中</span>
+    </header>
+
+    <main>
+      <section class="panel upload-panel">
+        <div id="dropzone" class="dropzone" tabindex="0">
+          <input id="file-input" type="file" accept="image/*" hidden />
+          <div class="dropzone-copy">
+            <strong>拖拽胸部 X 光片到此处</strong>
+            <span>或点击选择 JPEG / PNG 图片</span>
+          </div>
+        </div>
+        <div class="samples">
+          <button type="button" class="sample-btn" data-sample="./samples/NORMAL2-IM-1427-0001.jpeg">
+            示例：正常
+          </button>
+          <button type="button" class="sample-btn" data-sample="./samples/person1950_bacteria_4881.jpeg">
+            示例：肺炎
+          </button>
+        </div>
+        <div class="actions">
+          <button id="pick-btn" type="button" class="ghost">选择图片</button>
+          <button id="clear-btn" type="button" class="ghost" disabled>清除</button>
+          <button id="classify-btn" type="button" class="primary" disabled>开始检测</button>
+        </div>
+        <p class="hint">仅用于演示，不能替代专业医学诊断。</p>
+      </section>
+
+      <section class="panel result-panel">
+        <div class="preview-wrap">
+          <img id="preview" alt="待检测的胸部 X 光预览" hidden />
+          <div id="empty-preview" class="empty">尚未选择影像</div>
+        </div>
+        <div id="result" class="result idle">
+          <h2>检测结果</h2>
+          <p id="result-label">上传影像后点击「开始检测」</p>
+          <p id="result-detail"></p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      模型：<code>nickmuchi/vit-finetuned-chest-xray-pneumonia</code>
+      · 本项目仅为技术演示
+    </footer>
+    <script src="./app.js"></script>
+  </body>
+</html>
