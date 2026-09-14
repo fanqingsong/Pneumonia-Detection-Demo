@@ -25,4 +25,4 @@ echo
 echo "前端界面: http://127.0.0.1:8080"
 echo "模型 API : http://127.0.0.1:3000"
 echo
-echo "停止服务: docker compose down"
+echo "停止服务: ./stop.sh"
