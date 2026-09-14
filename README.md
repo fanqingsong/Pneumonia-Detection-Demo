@@ -18,6 +18,44 @@ In this project, we showcase the seamless integration of an image detection mode
 | ![Normal](samples/NORMAL2-IM-1427-0001.jpeg)| ![Pneumonia](samples/person1950_bacteria_4881.jpeg) |
 
 ## 🏃‍♂️ Running the Service 🏃‍♂️
+### Docker Compose (recommended)
+The easiest way to run the demo locally is with [Docker Compose V2](https://docs.docker.com/compose/) (`docker compose`, not the legacy `docker-compose` binary). You need Docker installed.
+
+```bash
+git clone https://github.com/bentoml/Pneumonia-Detection-demo.git && cd Pneumonia-Detection-demo
+
+./start.sh
+```
+
+`start.sh` runs `docker compose up --build -d`. Equivalent commands:
+
+```bash
+docker compose up --build -d
+docker compose logs -f api
+```
+
+This starts two services:
+
+| Service | Port | Description |
+|---------|------|-------------|
+| `web` | [http://127.0.0.1:8080](http://127.0.0.1:8080) | Nginx frontend for uploading X-ray images |
+| `api` | [http://127.0.0.1:3000](http://127.0.0.1:3000) | BentoML API and Swagger UI |
+
+The frontend proxies `/v1/` and health checks to the API, so you can classify images from the UI without calling port 3000 directly.
+
+The first start downloads the Hugging Face model (via `HF_ENDPOINT`, default `https://hf-mirror.com`) and can take several minutes. Model and Hugging Face caches are stored in named volumes (`hf-cache`, `bentoml-store`) so later starts skip the download.
+
+To stop:
+
+```bash
+./stop.sh
+# or: docker compose down
+```
+
+Caches are kept after stop. Remove them with `docker compose down -v` if you want a clean slate.
+
+Optional: set `HF_ENDPOINT` in the environment (or a `.env` file next to `docker-compose.yml`) to use another Hugging Face hub mirror.
+
 ### BentoML CLI
 Clone the repository and install the dependencies:
 ```bash
@@ -33,10 +71,8 @@ bentoml serve
 
 You can then open your browser at http://127.0.0.1:3000 and interact with the service through Swagger UI.
 
-### Containers
- We provide two pre-built containers optimized for CPU and GPU usage, respectively. 
-
-To run the service, you'll need a container engine such as Docker, Podman, etc. Quickly test the service by running the appropriate container:
+### Pre-built containers
+We also provide two pre-built images optimized for CPU and GPU usage. These run the API only (no frontend). You need a container engine such as Docker or Podman:
 
 ```bash
 # cpu
@@ -47,7 +83,10 @@ docker run --gpus all -p 3000:3000 ghcr.io/bentoml/pneumonia-detection-demo:gpu
 ```
 
 ## 🌐 Interacting with the Service 🌐
-BentoML's default model serving method is through an HTTP server. In this section, we demonstrate various ways to interact with the service:
+BentoML's default model serving method is through an HTTP server. In this section, we demonstrate various ways to interact with the service.
+
+If you started the stack with Docker Compose, open the web UI at http://127.0.0.1:8080 and upload a chest X-ray. Sample images live under `samples/` and `frontend/samples/`.
+
 ### cURL
 ```bash
 curl -X 'POST' \
@@ -56,7 +95,7 @@ curl -X 'POST' \
   -H 'Content-Type: image/mpo' \
   --data-binary '@path-to-image'
 ```
-> Replace `path-to-image` with the file path of the image you want to send to the service.
+> Replace `path-to-image` with the file path of the image you want to send to the service. With Docker Compose you can also POST to `http://localhost:8080/v1/classify` (proxied by nginx).
 
 The response look like:
 ```json
